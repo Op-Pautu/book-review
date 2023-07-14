@@ -31,8 +31,19 @@ class BookController extends Controller
         return view('books.index', ['books' => $books]);
 
     }
+    /**
+     * Display the specified resource.
+     */
+    public function show(Book $book)
+    {   
+        $cachekey = 'book:' . $book->id;
 
-   
+        $book = cache()->remember($cachekey, 3600, fn() => $book->load([
+            'reviews' => fn ($query) => $query->latest()
+        ]));
+    
+        return view('books.show', ['book' => $book]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -50,9 +61,7 @@ class BookController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     // public function show(Book $book)
     // {
     //     return view('books.show', [
@@ -61,14 +70,7 @@ class BookController extends Controller
     //         ])
     //         ]);
     // }
-    public function show(Book $book)
-    {
-        $book->load(['reviews' => function ($query) {
-            $query->latest();
-        }]);
     
-        return view('books.show', ['book' => $book]);
-    }
     
     /**
      * Show the form for editing the specified resource.

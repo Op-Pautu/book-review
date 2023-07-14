@@ -19,5 +19,10 @@ class Review extends Model
             
         ], 'rating')->orderBy('reviews_count', 'desc');
     }
+
+    public static function booted() {
+        static::updated(fn (Review $review) => cache()->forget('book:' . $review->book_id));
+        static::deleted(fn (Review $review) => cache()->forget('book:' . $review->book_id));
+    }
    
 }
