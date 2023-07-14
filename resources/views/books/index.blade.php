@@ -55,4 +55,7 @@
             </li>
         @endforelse
     </ul>
+    <div>
+        {{ $books->links() }}
+    </div>
 @endsection
