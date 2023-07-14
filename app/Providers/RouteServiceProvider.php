@@ -37,4 +37,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
     }
+    
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for ('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for ('reviews', function (Request $request) {
+            return Limit::perHour(3)->by($request->user()?->id ?: $request->ip());
+        });
+    }
 }
