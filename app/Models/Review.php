@@ -13,16 +13,12 @@ class Review extends Model
         return $this->belongsTo(Book::class);
     }
     
-    public function scopeHighestRated(Builder $query, $from = null, $to = null) {
-        return $query->withAvg([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
-            
-        ], 'rating')->orderBy('reviews_count', 'desc');
-    }
+   
 
     public static function booted() {
         static::updated(fn (Review $review) => cache()->forget('book:' . $review->book_id));
         static::deleted(fn (Review $review) => cache()->forget('book:' . $review->book_id));
+        static::created(fn (Review $review) => cache()->forget('book:' . $review->book_id));
     }
    
 }
